@@ -1,8 +1,6 @@
 #pragma once
 #include "BaseLayer.h"
 
-typedef unsigned char uchar;//1byte
-typedef unsigned short ushort; //2byte
 struct RIPHeader
 {
 	uchar command;
@@ -20,5 +18,8 @@ class RIPLayer : public CBaseLayer
 public:
 	RIPLayer(void);
 	~RIPLayer(void);
+
+	BOOL Send(unsigned char* ppayload, int nlength);
+	BOOL Receive(unsigned char* ppayload);
 };
 

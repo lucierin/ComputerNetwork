@@ -81,6 +81,8 @@
 
 #define NI_COUNT_NIC	10
 
+typedef unsigned char uchar;//1byte
+typedef unsigned short ushort; //2byte
 
 
 
