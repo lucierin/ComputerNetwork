@@ -41,6 +41,6 @@ void CProxyDialog::OnBnClickedOk()
 	// TODO: Add your control notification handler code here
 	unsigned char* ip = (unsigned char*) malloc(sizeof(unsigned char) * 4);
 	m_ProxyIP.GetAddress(ip[0], ip[1], ip[2], ip[3]);
-	proxyTable->addRow(ip);
+	proxyTable->AddProxy(ip);
 	CDialogEx::OnOK();
 }

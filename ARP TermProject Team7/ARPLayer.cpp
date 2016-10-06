@@ -98,7 +98,7 @@ BOOL CARPLayer::Send(unsigned char* ppayload, int nlength)
 		((CEthernetLayer*)mp_UnderLayer[0])->SetEnetSrcAddress(m_sHeader.enet_sender_addr);
 		((CEthernetLayer*)mp_UnderLayer[0])->SetEnetDstAddress(zero);
 		((CEthernetLayer*)mp_UnderLayer[0])->SetType((unsigned short)0x0608);
-		arpTable->addNew(m_sHeader.ip_target_addr);
+		arpTable->AddIncompleteByIp(m_sHeader.ip_target_addr);
 		bSuccess = mp_UnderLayer[0]->Send((unsigned char*)&m_sHeader, 28);
 
 	}

@@ -26,9 +26,9 @@ public:
 	ARPTable(bool isARP);
 	~ARPTable(void);
 	void init(ARPManager* arpManager, unsigned char* mac, unsigned char* ip);
-	void add(unsigned char* packet);
-	void addRow(unsigned char* ip);
-	void addNew(unsigned char* ip);
+	void AddIncompleteByPacket(unsigned char* packet);
+	void AddProxy(unsigned char* ip);
+	void AddIncompleteByIp(unsigned char* ip);
 	unsigned char* find(unsigned char* ip);
 	void timeCheck();
 	void check(unsigned char* packet);

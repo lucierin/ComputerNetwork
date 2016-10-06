@@ -25,7 +25,7 @@ void ARPTable::init(ARPManager* arpManager, unsigned char* mac, unsigned char* i
 	memcpy(myIP, ip, 4);
 }
 
-void ARPTable::add(unsigned char* packet)
+void ARPTable::AddIncompleteByPacket(unsigned char* packet)
 {
 	CARPLayer::PARPLayer_HEADER header = (CARPLayer::PARPLayer_HEADER) packet;
 	char* buffer = (char*)malloc(sizeof(char) * 40);
@@ -41,7 +41,7 @@ void ARPTable::add(unsigned char* packet)
 	arpManager->update();
 }
 
-void ARPTable::addRow(unsigned char* ip)
+void ARPTable::AddProxy(unsigned char* ip)
 {
 	PARP_ROW row = new ARP_ROW();
 	memcpy(row->enet_addr, myMac, 6);
@@ -111,7 +111,7 @@ void ARPTable::check(unsigned char* packet)
 			return;
 		}
 	}
-	add(packet);//만약 그어떤 테이블도 ip가 겹치는 곳이 없는 경우 새로 추가한다
+	AddIncompleteByPacket(packet);//만약 그어떤 테이블도 ip가 겹치는 곳이 없는 경우 새로 추가한다
 }
 
 void ARPTable::remove(int index)
@@ -163,7 +163,7 @@ void ARPTable::checkGratitious(unsigned char* origin, unsigned char* ether)
 	}
 }
 
-void ARPTable::addNew(unsigned char* ip)
+void ARPTable::AddIncompleteByIp(unsigned char* ip)
 {
 	if (memcmp(ip, myIP, 4) == 0) return;
 	PARP_ROW row = new ARP_ROW();
