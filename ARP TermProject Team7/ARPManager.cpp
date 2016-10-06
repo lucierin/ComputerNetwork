@@ -2,9 +2,9 @@
 #include "ARPManager.h"
 
 
-ARPManager::ARPManager(CListBox* listbox, bool isARP)
+ARPManager::ARPManager(bool isARP)
 {
-	this->listbox = listbox;
+	//this->listbox = listbox;
 	this->isARP = isARP;
 }
 
@@ -30,10 +30,11 @@ void ARPManager::initRight(unsigned char* mac, unsigned char* ip)
 }
 void ARPManager::update()
 {
-	listbox->ResetContent();
+	//listbox->ResetContent();
 	tables[0]->addAll();
 	tables[1]->addAll();
 }
+/* AddString Not use Anymore
 void ARPManager::AddString(PARP_ROW row, ARPTable* table, bool isARP)
 {
 	char value[100];
@@ -51,3 +52,4 @@ void ARPManager::AddString(PARP_ROW row, ARPTable* table, bool isARP)
 	}
 	if(listbox) listbox->AddString(value);
 }
+*/

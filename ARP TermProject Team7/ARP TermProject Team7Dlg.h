@@ -28,7 +28,7 @@ public:
 // 대화 상자 데이터입니다.
 
 	enum { IDD = IDD_ARPTERMPROJECTTEAM7_DIALOG };
-	CListBox		m_ListChat;		// Chatting Message View
+	//CListBox		m_ListChat;		// Chatting Message View
 	CString			m_unSrcEnetAddr;// Source Ethernet Address
 	CString			m_unDstEnetAddr;// Destination Ethernet Address
 	CString			m_stMessage;	// Chatting Message String
@@ -65,17 +65,6 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnBnClickedItemDelete();
-	afx_msg void OnBnClickedAllDelete();
-	afx_msg void OnBnClickedARPCacheSend();
-	afx_msg void OnBnClickedProxyAdd();
-	afx_msg void OnBnClickedAdd();
-	afx_msg void OnBnClickedProxyDelete();
-	afx_msg void OnBnClickedProxySend();
-	afx_msg void OnBnClickedQuit();
-	afx_msg void OnBnClickedButton8();
-	afx_msg void OnBnClickedRouterAdd();
-	afx_msg void OnBnClickedRouterDelete();
 	
 public:
 	BOOL			Receive( unsigned char* ppayload );
@@ -112,9 +101,11 @@ private:
 	UINT			m_wParam;
 	DWORD			m_lParam;
 public:
-	CListBox m_ListARP;
+	//CListBox m_ListARP;
 	//CIPAddressCtrl m_ARPIP;
-	CListBox m_ListProxy;
+	//CListBox m_ListProxy;
 	CListBox m_ListRouter;
 	//CString		m_ETHERNET;
+	afx_msg void OnBnClickedClear();
+	afx_msg void OnBnClickedAdd();
 };

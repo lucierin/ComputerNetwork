@@ -62,9 +62,9 @@ void CARPTermProjectTeam7Dlg::DoDataExchange(CDataExchange* pDX)
 {
 
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LIST1, m_ListARP);
+	//DDX_Control(pDX, IDC_LIST1, m_ListARP);
 	//DDX_Control(pDX, IDC_IPADDRESS1, m_ARPIP);
-	DDX_Control(pDX, IDC_LIST2, m_ListProxy);
+	//DDX_Control(pDX, IDC_LIST2, m_ListProxy);
 	DDX_Control(pDX, IDC_LIST3, m_ListRouter);
 	//DDX_Text(pDX, IDC_EDIT1, m_ETHERNET);
 }
@@ -73,16 +73,8 @@ BEGIN_MESSAGE_MAP(CARPTermProjectTeam7Dlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CARPTermProjectTeam7Dlg::OnBnClickedItemDelete)
-	ON_BN_CLICKED(IDC_BUTTON2, &CARPTermProjectTeam7Dlg::OnBnClickedAllDelete)
-	//ON_BN_CLICKED(IDC_BUTTON5, &CARPTermProjectTeam7Dlg::OnBnClickedARPCacheSend)
-	ON_BN_CLICKED(IDC_BUTTON3, &CARPTermProjectTeam7Dlg::OnBnClickedAdd)
-	ON_BN_CLICKED(IDC_BUTTON9, &CARPTermProjectTeam7Dlg::OnBnClickedProxyDelete)
-	//ON_BN_CLICKED(IDC_BUTTON6, &CARPTermProjectTeam7Dlg::OnBnClickedProxySend)
-	ON_BN_CLICKED(IDC_BUTTON7, &CARPTermProjectTeam7Dlg::OnBnClickedQuit)
-	ON_BN_CLICKED(IDC_BUTTON8, &CARPTermProjectTeam7Dlg::OnBnClickedButton8)
-	ON_BN_CLICKED(IDC_BUTTON4, &CARPTermProjectTeam7Dlg::OnBnClickedRouterAdd)
-	ON_BN_CLICKED(IDC_BUTTON5, &CARPTermProjectTeam7Dlg::OnBnClickedRouterDelete)
+	ON_BN_CLICKED(IDC_CLEAR, &CARPTermProjectTeam7Dlg::OnBnClickedClear)
+	ON_BN_CLICKED(IDC_ADD, &CARPTermProjectTeam7Dlg::OnBnClickedAdd)
 END_MESSAGE_MAP()
 
 
@@ -237,29 +229,11 @@ HCURSOR CARPTermProjectTeam7Dlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-void CARPTermProjectTeam7Dlg::OnBnClickedItemDelete()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	int index = m_ListARP.GetCurSel();
-	ARPTable* table = m_ARP[0]->getArpTable();
-	table->remove(index);
-	m_ListARP.DeleteString(m_ListARP.GetCurSel());
-}
-
-
-void CARPTermProjectTeam7Dlg::OnBnClickedAllDelete()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	m_ARP[0]->getArpTable()->clear();
-}
-
 void CARPTermProjectTeam7Dlg::InitAddress( )
 {
 	unsigned char* mac = (unsigned char*) malloc(sizeof(unsigned char) * 6);
-	ARPManager* arpManager = new ARPManager(&m_ListARP, true);
-	ARPManager* proxyManager = new ARPManager(&m_ListProxy, false);
+	ARPManager* arpManager = new ARPManager(true);
+	ARPManager* proxyManager = new ARPManager(false);
 	
 	memset(mac, 0, 6);
 	mac[0] = 0x00; mac[1] = 0x00;
@@ -322,6 +296,13 @@ void CARPTermProjectTeam7Dlg::InitAddress( )
 		m_NI[i]->SetAdapterNumber(i);
 		m_NI[i]->PacketStartDriver();
 		
+		
+		arpManager->init(i, mac, ipaddr[i]);
+		proxyManager->init(i, mac, ipaddr[i]);
+		
+		m_ARP[i]->init(arpManager->Get(i), proxyManager->Get(i));
+		m_NI[i]->init(arpManager->Get(i), proxyManager->Get(i));
+		/*
 		if(i == 0) {
 			arpManager->initLeft(mac, ipaddr[0]);
 			proxyManager->initLeft(mac, ipaddr[0]);
@@ -334,6 +315,7 @@ void CARPTermProjectTeam7Dlg::InitAddress( )
 			m_ARP[i]->init(arpManager->getRight(), proxyManager->getRight());
 			m_NI[i]->init(arpManager->getRight(), proxyManager->getRight());
 		}
+		*/
 	}	
 	m_IP->SetSrcIPAddress(ipaddr[0], ipaddr[1]);
 
@@ -342,51 +324,19 @@ void CARPTermProjectTeam7Dlg::InitAddress( )
 	m_IP->init(rt);
 }
 
-
-void CARPTermProjectTeam7Dlg::OnBnClickedAdd()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CProxyDialog dlg(m_ARP[0]->getProxyTable(), this);
-	dlg.DoModal();
-}
-
-
-void CARPTermProjectTeam7Dlg::OnBnClickedProxyDelete()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	int index = m_ListProxy.GetCurSel();
-	ARPTable* table = m_ARP[0]->getProxyTable();
-	table->remove(index);
-	m_ListARP.DeleteString(m_ListProxy.GetCurSel());
-}
-
-
-void CARPTermProjectTeam7Dlg::OnBnClickedQuit()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CARPTermProjectTeam7Dlg::OnBnClickedButton8()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-
-}
-
-
 BOOL CARPTermProjectTeam7Dlg::Receive( unsigned char* ppayload )
 {
 	return true;
 }
 
-void CARPTermProjectTeam7Dlg::OnBnClickedRouterAdd()
+
+void CARPTermProjectTeam7Dlg::OnBnClickedClear()
 {
-	CRouterDialog EntryDlg(m_IP->getTable());
-	EntryDlg.DoModal();
+	// TODO: Add your control notification handler code here
 }
 
 
-void CARPTermProjectTeam7Dlg::OnBnClickedRouterDelete()
+void CARPTermProjectTeam7Dlg::OnBnClickedAdd()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	// TODO: Add your control notification handler code here
 }

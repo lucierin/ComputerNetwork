@@ -144,7 +144,7 @@ void ARPTable::addAll()
 	{
 		unsigned char* enet = (*i)->enet_addr;
 		unsigned char* ip = (*i)->ip_addr;
-		arpManager->AddString((*i), this, isARP);
+		//arpManager->AddString((*i), this, isARP);
 	}
 	delete value;
 }

@@ -79,13 +79,13 @@
     <ClInclude Include="ARPManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Main.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="BindingTable.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="RIPLayer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UDPLayer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -132,13 +132,13 @@
     <ClCompile Include="ARPManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="BindingTable.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="RIPLayer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="UDPLayer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
