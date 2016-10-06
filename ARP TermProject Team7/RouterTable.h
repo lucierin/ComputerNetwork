@@ -25,5 +25,6 @@ public:
 	int get(unsigned char* ip, unsigned char* gateway);
 	void update();
 	void remove(int index);
+	void clear();
 };
 

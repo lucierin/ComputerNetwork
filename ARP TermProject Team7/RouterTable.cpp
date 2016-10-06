@@ -107,3 +107,8 @@ int RouterTable::get(unsigned char* ip, unsigned char* gateway)
 	//table의 destination중에는 없었다
 	return -1;
 }
+void RouterTable::clear()
+{
+	while(table.size() > 0)
+		remove(0);
+}

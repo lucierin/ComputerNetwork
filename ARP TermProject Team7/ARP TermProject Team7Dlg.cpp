@@ -333,10 +333,14 @@ BOOL CARPTermProjectTeam7Dlg::Receive( unsigned char* ppayload )
 void CARPTermProjectTeam7Dlg::OnBnClickedClear()
 {
 	// TODO: Add your control notification handler code here
+	RouterTable* table = m_IP->getTable();
+	table->clear();
 }
 
 
 void CARPTermProjectTeam7Dlg::OnBnClickedAdd()
 {
 	// TODO: Add your control notification handler code here
+	CRouterDialog dialog(m_IP->getTable());
+	dialog.DoModal();
 }
