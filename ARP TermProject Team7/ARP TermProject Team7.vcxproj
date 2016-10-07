@@ -15,7 +15,7 @@
     <RootNamespace>ARPTermProjectTeam7</RootNamespace>
     <Keyword>MFCProj</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
-    <ProjectName>ARPTermProjectTeam7</ProjectName>
+    <ProjectName>NetworkTeam2</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

@@ -49,16 +49,8 @@ public:
 		
 	} IPLayer_HEADER, *PIPLayer_HEADER ;
 	
-	typedef struct _ICMP_HEADER {
-		unsigned char type;	// ip version		(1byte)
-		unsigned char code;		// type of service	(1byte)
-		unsigned short cksum;		// total packet length	(2byte)
-		unsigned int message;		// datagram id			(2byte)
-	} ICMP_HEADER, *PICMP_HEADER;
-
 protected:
 	IPLayer_HEADER	m_sHeader ;
-	ICMP_HEADER m_icmp;
 };
 
 
