@@ -1,6 +1,6 @@
 #pragma once
 #include "BaseLayer.h"
-
+#include "RouterTable.h"
 struct RIPHeader
 {
 	uchar command;
@@ -13,12 +13,15 @@ struct RIPHeader
 	uchar nextip[4];
 	int metric;
 };
-class RIPLayer : public CBaseLayer
+class CRIPLayer : public CBaseLayer
 {
+private:
+	RouterTable* table;
 public:
-	RIPLayer(void);
-	~RIPLayer(void);
+	CRIPLayer(char* pName);
+	~CRIPLayer(void);
 
+	void Init(RouterTable* table) { this->table = table; }
 	BOOL Send(unsigned char* ppayload, int nlength);
 	BOOL Receive(unsigned char* ppayload);
 };

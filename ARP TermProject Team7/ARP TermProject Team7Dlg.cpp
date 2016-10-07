@@ -117,6 +117,8 @@ BOOL CARPTermProjectTeam7Dlg::OnInitDialog()
 	m_LayerMgr.AddLayer( new CIPLayer( "IP" ) );
 	m_LayerMgr.AddLayer( new CARPLayer( "ARP0" ) );
 	m_LayerMgr.AddLayer(new CARPLayer("ARP1"));
+	m_LayerMgr.AddLayer(new CRIPLayer("RIP"));
+	m_LayerMgr.AddLayer(new CUDPLayer("UDP"));
 	m_LayerMgr.AddLayer( this );
 
 	m_LayerMgr.ConnectLayers("(NI0 ( *Ethernet0 ( *ARP0 ( *IP ) *IP ( *AppDlg ) ) ) *NI1 ( *Ethernet1 ( *ARP1 ( *IP ) *IP ( *AppDlg ) ) ) )");
@@ -321,7 +323,10 @@ void CARPTermProjectTeam7Dlg::InitAddress( )
 
 	RouterTable* rt = new RouterTable();
 	rt->init(&m_ListRouter, m_NI[0]->GetAdapterObject(0)->description, m_NI[1]->GetAdapterObject(1)->description);
+
 	m_IP->init(rt);
+	m_UDP->Init(rt);
+	m_RIP->Init(rt);
 }
 
 BOOL CARPTermProjectTeam7Dlg::Receive( unsigned char* ppayload )

@@ -2,21 +2,21 @@
 #include "UDPLayer.h"
 
 
-UDPLayer::UDPLayer(void)
+CUDPLayer::CUDPLayer(char* pName) : CBaseLayer(pName)
 {
 }
 
 
-UDPLayer::~UDPLayer(void)
+CUDPLayer::~CUDPLayer(void)
 {
 }
 
-BOOL UDPLayer::Send(unsigned char* ppayload, int nlength)
+BOOL CUDPLayer::Send(unsigned char* ppayload, int nlength)
 {
 	return false;
 }
 
-BOOL UDPLayer::Receive(unsigned char* ppayload)
+BOOL CUDPLayer::Receive(unsigned char* ppayload)
 {
 	return false;
 }

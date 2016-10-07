@@ -2,21 +2,21 @@
 #include "RIPLayer.h"
 
 
-RIPLayer::RIPLayer(void)
+CRIPLayer::CRIPLayer(char* pName) : CBaseLayer(pName)
 {
 }
 
 
-RIPLayer::~RIPLayer(void)
+CRIPLayer::~CRIPLayer(void)
 {
 }
 
-BOOL RIPLayer::Send(unsigned char* ppayload, int nlength)
+BOOL CRIPLayer::Send(unsigned char* ppayload, int nlength)
 {
 	return false;
 }
 
-BOOL RIPLayer::Receive(unsigned char* ppayload)
+BOOL CRIPLayer::Receive(unsigned char* ppayload)
 {
 	return false;
 }

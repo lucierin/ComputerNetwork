@@ -12,6 +12,8 @@
 #include "afxwin.h"
 #include "resource.h"
 #include "afxcmn.h"
+#include "RIPLayer.h"
+#include "UDPLayer.h"
 
 #if _MSC_VER > 1000
 #pragma once
@@ -95,7 +97,8 @@ private:
 	CEthernetLayer*	m_ETH[2];
 	CNILayer*		m_NI[2];
 	CARPLayer*		m_ARP[2];
-
+	CRIPLayer*		m_RIP;
+	CUDPLayer*		m_UDP;
 
 // Implementation
 	UINT			m_wParam;
