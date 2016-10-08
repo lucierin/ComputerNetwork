@@ -9,7 +9,7 @@
 #include "ARPTable.h"
 #include "ProxyDialog.h"
 #include "RouterDialog.h"
-#include "ARPManager.h"
+#include "LayerManager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -109,7 +109,9 @@ BOOL CARPTermProjectTeam7Dlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
+	manager = new LayerManager();
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	/*
 	m_LayerMgr.AddLayer( new CNILayer( "NI0") );
 	m_LayerMgr.AddLayer(new CNILayer("NI1"));
 	m_LayerMgr.AddLayer( new CEthernetLayer( "Ethernet0" ) );
@@ -175,8 +177,8 @@ BOOL CARPTermProjectTeam7Dlg::OnInitDialog()
 		m_ETH[i]->setCount(i);
 		m_ARP[i]->setCount(i);
 	}
-	
-	InitAddress();
+	*/
+	//InitAddress();
 
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -233,6 +235,7 @@ HCURSOR CARPTermProjectTeam7Dlg::OnQueryDragIcon()
 
 void CARPTermProjectTeam7Dlg::InitAddress( )
 {
+	/*
 	unsigned char* mac = (unsigned char*) malloc(sizeof(unsigned char) * 6);
 	ARPManager* arpManager = new ARPManager(true);
 	ARPManager* proxyManager = new ARPManager(false);
@@ -302,8 +305,8 @@ void CARPTermProjectTeam7Dlg::InitAddress( )
 		arpManager->init(i, mac, ipaddr[i]);
 		proxyManager->init(i, mac, ipaddr[i]);
 		
-		m_ARP[i]->init(arpManager->Get(i), proxyManager->Get(i));
-		m_NI[i]->init(arpManager->Get(i), proxyManager->Get(i));
+		//m_ARP[i]->init(arpManager->Get(i), proxyManager->Get(i));
+		//m_NI[i]->init(arpManager->Get(i), proxyManager->Get(i));
 		/*
 		if(i == 0) {
 			arpManager->initLeft(mac, ipaddr[0]);
@@ -317,16 +320,17 @@ void CARPTermProjectTeam7Dlg::InitAddress( )
 			m_ARP[i]->init(arpManager->getRight(), proxyManager->getRight());
 			m_NI[i]->init(arpManager->getRight(), proxyManager->getRight());
 		}
-		*/
+		
 	}	
 	m_IP->SetSrcIPAddress(ipaddr[0], ipaddr[1]);
 
 	RouterTable* rt = new RouterTable();
-	rt->init(&m_ListRouter, m_NI[0]->GetAdapterObject(0)->description, m_NI[1]->GetAdapterObject(1)->description);
+	rt->init(&m_ListRouter);
 
 	m_IP->init(rt);
 	m_UDP->Init(rt);
 	m_RIP->Init(rt);
+	*/
 }
 
 BOOL CARPTermProjectTeam7Dlg::Receive( unsigned char* ppayload )

@@ -1,15 +1,13 @@
 #include "stdafx.h"
 #include "ARPTable.h"
 #include "ARPLayer.h"
-#include "ARPManager.h"
 #include "ARP TermProject Team7Dlg.h"
 
 
-ARPTable::ARPTable(bool isARP)
+ARPTable::ARPTable()
 {
 	zero = (unsigned char*) malloc(sizeof(unsigned char) * 6);
 	memset(zero, 0, 6);
-	this->isARP = isARP;
 }
 
 
@@ -17,8 +15,7 @@ ARPTable::~ARPTable(void)
 {
 }
 
-void ARPTable::init(ARPManager* arpManager, unsigned char* mac, unsigned char* ip) {
-	this->arpManager = arpManager;
+void ARPTable::init( unsigned char* mac, unsigned char* ip) {
 	this->myMac = (unsigned char*) malloc(sizeof(unsigned char) * 6);
 	this->myIP = (unsigned char*)malloc(sizeof(unsigned char) * 4);
 	memcpy(myMac, mac, 6);
@@ -38,7 +35,7 @@ void ARPTable::AddIncompleteByPacket(unsigned char* packet)
 	if (memcmp(header->enet_sender_addr, myMac, 6) != 0)
 		row->status = 1;
 	table.push_back(row);
-	arpManager->update();
+	//arpManager->update();
 }
 
 void ARPTable::AddProxy(unsigned char* ip)
@@ -49,7 +46,7 @@ void ARPTable::AddProxy(unsigned char* ip)
 	time_t timer = time(NULL);
 	localtime_s(&row->time, &timer);
 	table.push_back(row);
-	arpManager->update();
+	//arpManager->update();
 }
 
 unsigned char* ARPTable::find(unsigned char* ip)
@@ -84,7 +81,7 @@ void ARPTable::timeCheck()
 			if (table.size() == 0 || i == table.end()) break;
 		}
 	}
-	arpManager->update();
+	//arpManager->update();
 }
 
 void ARPTable::check(unsigned char* packet)
@@ -107,7 +104,7 @@ void ARPTable::check(unsigned char* packet)
 		if (memcmp(row->ip_addr, header->ip_sender_addr, 4) == 0) {
 			checkGratitious(row->enet_addr, header->enet_sender_addr);
 			//memcpy(row->enet_addr, header->enet_sender_addr, 6);
-			arpManager->update();
+			//arpManager->update();
 			return;
 		}
 	}
@@ -133,7 +130,7 @@ void ARPTable::remove(int index)
 void ARPTable::clear()
 {
 	table.clear();
-	arpManager->update();
+	//arpManager->update();
 }
 
 
@@ -173,7 +170,7 @@ void ARPTable::AddIncompleteByIp(unsigned char* ip)
 	localtime_s(&row->time, &timer);
 	table.push_back(row);
 	row->status = 0;
-	arpManager->update();
+	//arpManager->update();
 }
 
 

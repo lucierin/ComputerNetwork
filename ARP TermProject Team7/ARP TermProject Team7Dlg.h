@@ -8,7 +8,6 @@
 #include "NILayer.h"
 #include "ARPLayer.h"
 #include "IPLayer.h"
-#include "LayerManager.h"
 #include "afxwin.h"
 #include "resource.h"
 #include "afxcmn.h"
@@ -19,7 +18,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-
+class LayerManager;
 // CARPTermProjectTeam7Dlg 대화 상자
 class CARPTermProjectTeam7Dlg : public CDialogEx, public CBaseLayer
 {
@@ -73,7 +72,6 @@ public:
 	inline void		SendData( );
 
 private:
-	CLayerManager	m_LayerMgr;
 
 	enum {			IPC_INITIALIZING, 
 					IPC_READYTOSEND, 
@@ -100,6 +98,8 @@ private:
 	CRIPLayer*		m_RIP;
 	CUDPLayer*		m_UDP;
 
+	LayerManager*	manager;
+
 // Implementation
 	UINT			m_wParam;
 	DWORD			m_lParam;
@@ -112,3 +112,5 @@ public:
 	afx_msg void OnBnClickedClear();
 	afx_msg void OnBnClickedAdd();
 };
+
+typedef CARPTermProjectTeam7Dlg MainDialog;

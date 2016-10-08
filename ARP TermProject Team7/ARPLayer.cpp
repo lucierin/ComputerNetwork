@@ -23,9 +23,8 @@ CARPLayer::CARPLayer(char* pName)
 CARPLayer::~CARPLayer()
 {
 }
-void CARPLayer::init(ARPTable* arpTable, ARPTable* proxyTable) {
+void CARPLayer::init(ARPTable* arpTable) {
 	this->arpTable = arpTable;
-	this->proxyTable = proxyTable;
 }
 
 void CARPLayer::ResetHeader()
@@ -121,34 +120,12 @@ BOOL CARPLayer::Receive(unsigned char* ppayload)
 	/////////proxy ARP table에서 ip를 가지고 ethernet주소를 찾는다. /////////////
 	/////////있으면 해당  ethernet주소, 없으면 0으로 채워진 주소/////////////
 	unsigned char eth[6];
-	memcpy(eth, proxyTable->find(pFrame->ip_target_addr),6);
+
 	unsigned char zero[6];
 	zero[0] = 0x00; zero[1] = 0x00;
 	zero[2] = 0x00; zero[3] = 0x00;
 	zero[4] = 0x00; zero[5] = 0x00;
 
-
-	if (memcmp(eth, zero,6) != 0) {//////////////proxy ARP table 검사//////
-		//////////////////해당 ARP주소가 있으면 덮어씌움(어차피 같음)////////////////////
-		arpTable->check(ppayload);
-		
-
-
-		memcpy(eth, pFrame->ip_target_addr, 4);
-		////////////////////ARP frame 설정 swap/////////////
-		memcpy(pFrame->enet_target_addr, pFrame->enet_sender_addr, 6);
-		memcpy(pFrame->ip_target_addr, pFrame->ip_sender_addr, 4);
-		memcpy(pFrame->enet_sender_addr, m_sHeader.enet_sender_addr, 6);
-		memcpy(pFrame->ip_sender_addr, eth, 4);
-		pFrame->op = 0x0200;
-
-		/////////////////////ethernet 설정////////////////////
-		((CEthernetLayer*)mp_UnderLayer[0])->SetEnetSrcAddress(pFrame->enet_sender_addr);
-		((CEthernetLayer*)mp_UnderLayer[0])->SetEnetDstAddress(pFrame->enet_target_addr);
-		((CEthernetLayer*)mp_UnderLayer[0])->SetType((unsigned short)0x0608);
-
-		return bSuccess = mp_UnderLayer[0]->Send((unsigned char*)pFrame, 28);
-	}
 	///////////해당 IP인지 검사///////////////////
 	if (memcmp((char *)pFrame->ip_target_addr, (char *)m_sHeader.ip_sender_addr, 4) == 0) 
 	{
@@ -207,7 +184,6 @@ BOOL CARPLayer::Receive(unsigned char* ppayload)
 		memcpy(pFrame->enet_sender_addr, m_sHeader.enet_sender_addr, 6);
 		memcpy(pFrame->ip_sender_addr, eth, 4);
 		pFrame->op = 0x0200;
-		proxyTable->check(ppayload);
 		/////////////////////ethernet 설정////////////////////
 		((CEthernetLayer*)mp_UnderLayer[0])->SetEnetSrcAddress(pFrame->enet_sender_addr);
 		((CEthernetLayer*)mp_UnderLayer[0])->SetEnetDstAddress(pFrame->enet_target_addr);

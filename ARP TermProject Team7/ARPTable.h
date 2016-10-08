@@ -16,16 +16,14 @@ class ARPTable
 {
 private:
 	std::vector<PARP_ROW> table;
-	ARPManager* arpManager;
 	unsigned char* myMac; //무조건 6자리다
 	unsigned char* myIP;
 	unsigned char* zero;
-	bool isARP;
 public:
 	unsigned char value[6];
-	ARPTable(bool isARP);
+	ARPTable(void);
 	~ARPTable(void);
-	void init(ARPManager* arpManager, unsigned char* mac, unsigned char* ip);
+	void init(unsigned char* mac, unsigned char* ip);
 	void AddIncompleteByPacket(unsigned char* packet);
 	void AddProxy(unsigned char* ip);
 	void AddIncompleteByIp(unsigned char* ip);

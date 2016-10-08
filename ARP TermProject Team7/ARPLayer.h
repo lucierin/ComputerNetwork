@@ -10,12 +10,11 @@ private:
 	int				thisCount;
 	
 	ARPTable*		 arpTable;
-	ARPTable*		 proxyTable;
 public:
 	
 	CARPLayer(char* pName);
 	virtual ~CARPLayer();
-	void			init(ARPTable* arpTable, ARPTable* proxyTable);
+	void			init(ARPTable* arpTable);
 
 	void			SetEnetSenderAddress(unsigned char* pAddress);
 	void			SetIPSenderAddress(unsigned char* pAddress);
@@ -38,7 +37,6 @@ public:
 	unsigned char*   tempData;
 	int				 tempLength;
 	ARPTable*		 getArpTable() { return arpTable; }
-	ARPTable*		 getProxyTable() { return proxyTable; }
 
 
 	typedef struct _ARPLayer_HEADER 
