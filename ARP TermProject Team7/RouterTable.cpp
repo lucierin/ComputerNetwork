@@ -15,11 +15,11 @@ RouterTable::~RouterTable(void)
 }
 
 
-void RouterTable::init(CListBox* listbox, char* name1, char* name2)
+void RouterTable::init(CListBox* listbox)
 {
 	this->listbox = listbox;
-	this->name1 = name1;
-	this->name2 = name2;
+	//this->name1 = name1;
+	//this->name2 = name2;
 }
 
 void RouterTable::add(unsigned char* netmask, unsigned char* dest, unsigned char* gateway, int flag, int index, int metric)

@@ -20,14 +20,13 @@ class CNILayer
 protected:
 	pcap_t			*m_AdapterObject;
 	ARPTable		*arpTable;
-	ARPTable		*proxyTable;
 
 public:
 	BOOL			m_thrdSwitch;
 	unsigned char*  m_ppayload;
 
 	void			PacketStartDriver();
-	void			init(ARPTable* arp, ARPTable* proxy);
+	void			init(ARPTable* arp);
 	pcap_if_t 		*GetAdapterObject(int iIndex);
 	void			SetAdapterNumber(int iNum);
 	void			SetAdapterList(LPADAPTER *plist);

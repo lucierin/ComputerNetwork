@@ -17,10 +17,10 @@ private:
 	CListBox* listbox;
 	unsigned char* zero;
 public:
-	char *name1, *name2;
+	//char *name1, *name2;
 	RouterTable(void);
 	~RouterTable(void);
-	void init(CListBox* listbox, char* name1, char* name2);
+	void init(CListBox* listbox);
 	void add(unsigned char* netmask, unsigned char* dest, unsigned char* gateway, int flag, int index, int metric);
 	int get(unsigned char* ip, unsigned char* gateway);
 	void update();

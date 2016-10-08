@@ -24,7 +24,6 @@ CNILayer::CNILayer( char *pName, LPADAPTER *pAdapterObject, int iNumAdapter )
 	m_thrdSwitch = TRUE;
 	SetAdapterList(NULL);
 	arpTable = NULL;
-	proxyTable = NULL;
 }
 
 CNILayer::~CNILayer()
@@ -132,8 +131,6 @@ UINT CNILayer::ReadingThread(LPVOID pParam)
 		}
 		if(pNI->arpTable != NULL)
 			pNI->arpTable->timeCheck();
-		if(pNI->proxyTable != NULL)
-			pNI->proxyTable->timeCheck();
 	}
 	return 0;
 	///////////////////////////////////////////////////////////////////////
@@ -147,8 +144,7 @@ UINT CNILayer::FileTransferThread(LPVOID pParam)
 }
 
 
-void CNILayer::init(ARPTable* arp, ARPTable* proxy)
+void CNILayer::init(ARPTable* arp)
 {
 	this->arpTable = arp;
-	this->proxyTable = proxy;
 }
