@@ -1,59 +1,51 @@
-// LayerManager.h: interface for the CLayerManager class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_LAYERMANAGER_H__D9F8CF34_8A6D_425A_BDB9_47A4874FF902__INCLUDED_)
-#define AFX_LAYERMANAGER_H__D9F8CF34_8A6D_425A_BDB9_47A4874FF902__INCLUDED_
-
-#include "BaseLayer.h"
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+#include "UDPLayer.h"
+#include "RIPLayer.h"
+#include "IPLayer.h"
+#include "NILayer.h"
+#include "EthernetLayer.h"
+#include "ARPLayer.h"
+#include "ARP TermProject Team7Dlg.h"
+#include "ARPTable.h"
+#include "RouterTable.h"
 
-class CLayerManager  
+class LayerManager
 {
 private:
-	typedef struct _NODE { 
-
-		char			token[ 50 ] ;
-		struct _NODE*	next ;
-
-	} NODE, *PNODE ;
-
+	SVector<CARPLayer*> marps;
+	SVector<CEthernetLayer*> meths;
+	SVector<CNILayer*> mnis;
+	SVector<ARPTable*> tables;
+	RouterTable* rtable;
+	MainDialog* dlg;
+	CUDPLayer* mudp;
+	CRIPLayer* mrip;
+	CIPLayer* mip;
+	
 public:
-	void			DeAllocLayer( );
-
-	void			ConnectLayers( char* pcList );
-	CBaseLayer*		GetLayer( char* pName );
-	CBaseLayer*		GetLayer( int nindex );
-	void			AddLayer( CBaseLayer* pLayer );
-
-	CLayerManager( ) ;
-	virtual ~CLayerManager( ) ;
-
-private:
-	// about stack...
-	int				m_nTop;
-	CBaseLayer*		mp_Stack[ MAX_LAYER_NUMBER ];
-
-	CBaseLayer*		Top( );
-	CBaseLayer*		Pop( );
-	void			Push( CBaseLayer* pLayer );
-
-    PNODE			mp_sListHead;
-	PNODE			mp_sListTail;
-
-	// about Link Layer...
-	void			LinkLayer( PNODE pNode );
-
-	inline void		AddNode( PNODE pNode );
-	inline PNODE	AllocNode( char* pcName );
-	void			MakeList( char* pcList );
-
-	int				m_nLayerCount;
-	CBaseLayer*		mp_aLayers[ MAX_LAYER_NUMBER ] ;
-
+	LayerManager();
+	~LayerManager(void);
+	void Init(MainDialog* dlg);
+	void AddPort();
+	void RemoveAt(int index);
+	uchar* GetIP(int index);
+	uchar* GetMac(int index);
 };
 
-#endif // !defined(AFX_LAYERMANAGER_H__D9F8CF34_8A6D_425A_BDB9_47A4874FF902__INCLUDED_)
+typedef struct in_addr InAddr;
+#define SunB addr->S_un.S_un_b
+
+#define REMOVE_AT_LAYER(type, name)\
+for(Iterator(type) i = name.begin(); i != name.end(); k++)\
+{\
+	if(k == index)\
+	{\
+		type layer = (*i);\
+		i = name.erase(i);\
+		delete layer;\
+	}\
+	else\
+	{\
+		i++;\
+	}\
+}

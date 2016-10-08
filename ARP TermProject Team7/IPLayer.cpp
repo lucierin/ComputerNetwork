@@ -1,3 +1,4 @@
+
 // IPLayer.cpp: implementation of the CIPLayer class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -6,6 +7,7 @@
 #include "ARP TermProject Team7.h"
 #include "IPLayer.h"
 #include "ARP TermProject Team7Dlg.h"
+#include "LayerManager.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -42,7 +44,10 @@ void CIPLayer::ResetHeader()
 	memset( m_sHeader.ip_dst, 0, 4);
 	memset( m_sHeader.ip_data, 0, IP_DATA_SIZE);
 }
-
+void CIPLayer::addSrcIPAddress(unsigned char* src_ip){
+}
+void CIPLayer::deleteSrcIPAddress(unsigned char* src_ip){
+}
 void CIPLayer::SetSrcIPAddress(unsigned char* src_ip1, unsigned char* src_ip2)
 {
 	memcpy( srcip[0], src_ip1, 4);
@@ -58,15 +63,31 @@ void CIPLayer::SetFragOff(unsigned short fragoff)
 {
 	m_sHeader.ip_fragoff = fragoff;
 }
+void CIPLayer::SetIpProto(unsigned char ip_proto)
+{
+	m_sHeader.ip_proto = ip_proto;
+}
 
 BOOL CIPLayer::Send(unsigned char* ppayload, int nlength)
 {
 	memcpy( m_sHeader.ip_data, ppayload, nlength ) ;
 	
 	BOOL bSuccess = FALSE ;
-	bSuccess = mp_UnderLayer[1]->Send((unsigned char*)&m_sHeader,20 + nlength);
+
+	unsigned char ip_target[4];
+	*ip_target = *(unsigned char*)malloc(sizeof(unsigned char) * 4);
+	int index = table->get(destip, ip_target);
+
+	((CARPLayer*)mp_UnderLayer[index])->SetIPTargetAddress(ip_target);
+	bSuccess = mp_UnderLayer[index]->Send((unsigned char*)&m_sHeader,20 + nlength);
 
 	return bSuccess;
+}
+
+void CIPLayer::Init(RouterTable* table, LayerManager* manager)
+{ 
+	this->table = table;
+	this->manager = manager;
 }
 
 unsigned char* CIPLayer::GetSrcIPAddress()
@@ -88,36 +109,43 @@ BOOL CIPLayer::Receive(unsigned char* ppayload)
 	
 
 	BOOL bSuccess = FALSE ;
+	for(int  i=0;i<IP_COUNT;i++){
+		if(memcmp(pFrame->ip_dst, srcip[i],6) == 0){
+			if(pFrame->ip_proto == 0x1100){
+				bSuccess = mp_aUpperLayer[0]->Receive((unsigned char*) pFrame->ip_data);
+			}
+		}
+	}
+		unsigned char ip_target[4];
+		*ip_target = *(unsigned char*)malloc(sizeof(unsigned char) * 4);
+		int index = table->get(pFrame->ip_dst, ip_target);
 	
-	unsigned char* ip_target;
-	ip_target = (unsigned char*)malloc(sizeof(unsigned char) * 4);
-	int index = table->get(pFrame->ip_dst, ip_target);
-	
-	/////table에 경로가 없으면 패킷을 버림/////
-	if (index == -1) return bSuccess;
+		/////table에 경로가 없으면 패킷을 버림/////
+		if (index == -1) return bSuccess;
 	
 	
-	//////nlength를 구하여 다시 보낼수 있게한다./////
-	unsigned char len[2];
-	unsigned short temp =  pFrame->ip_len;
-	memcpy(len, (unsigned char*)&temp, 2);
-	int plen = ((int)len[0]<<8) + (int)len[1];
+		//////nlength를 구하여 다시 보낼수 있게한다./////
+		unsigned char len[2];
+		unsigned short temp =  pFrame->ip_len;
+		memcpy(len, (unsigned char*)&temp, 2);
+		int plen = ((int)len[0]<<8) + (int)len[1];
 		
 	
-	///////ttl값을 -1하고 ip_cksum을 조정한다/////
-	if(pFrame->ip_ttl == 0 ) return bSuccess; /// ttl이 0이면 패킷을 버린다.
-	pFrame->ip_ttl -= (unsigned char)1;
-	int sum = pFrame->ip_cksum;
-	sum = sum + 1;
-	pFrame->ip_cksum+=1;
-	if (sum > 0xffff) pFrame->ip_cksum += 1;
+		///////ttl값을 -1하고 ip_cksum을 조정한다/////
+		if(pFrame->ip_ttl == 0 ) return bSuccess; /// ttl이 0이면 패킷을 버린다.
+		pFrame->ip_ttl -= (unsigned char)1;
+		int sum = pFrame->ip_cksum;
+		sum = sum + 1;
+		pFrame->ip_cksum+=1;
+		if (sum > 0xffff) pFrame->ip_cksum += 1;
 	
 		
-	if ((memcmp(ip_target, srcip[0], 4) == 0) || (memcmp(ip_target, srcip[0], 4) == 0)) return bSuccess;
+		if ((memcmp(ip_target, srcip[0], 4) == 0) || (memcmp(ip_target, srcip[0], 4) == 0)) return bSuccess;
 
-	((CARPLayer*)mp_UnderLayer[index])->SetIPTargetAddress(ip_target);
-	bSuccess = mp_UnderLayer[index]->Send((unsigned char*)pFrame, plen);
+		((CARPLayer*)mp_UnderLayer[index])->SetIPTargetAddress(ip_target);
+		bSuccess = mp_UnderLayer[index]->Send((unsigned char*)pFrame, plen);
 	
-	ReleaseSemaphore(sem, 1, 0);//modified
+		ReleaseSemaphore(sem, 1, 0);//modified
+	
 	return bSuccess ;
 }

@@ -9,27 +9,34 @@
 #include "BaseLayer.h"
 #include "RouterTable.h"
 #include "ARPLayer.h"
+#define  IP_COUNT 10
 
+class LayerManager;
 class CIPLayer 
 : public CBaseLayer  
 {
 private:
 	RouterTable* table;
 	inline void		ResetHeader( );
-	unsigned char srcip[2][4];
+	unsigned char srcip[IP_COUNT][4];
 	unsigned char destip[4];
+	LayerManager* manager;
 	HANDLE sem;//modified
 public:
 	CIPLayer( char* pName );
 	virtual ~CIPLayer();
 	void SetSrcIPAddress(unsigned char* src_ip1, unsigned char* src_ip2);
+	void addSrcIPAddress(unsigned char* src_ip);
+	void deleteSrcIPAddress(unsigned char* src_ip);
 	void SetDstIPAddress(unsigned char* dst_ip);
 	void SetFragOff(unsigned short fragoff);
+	void SetIpProto(unsigned char ip_proto);
 
-	void init(RouterTable* table) { this->table = table; }
+	void Init(RouterTable* table, LayerManager* manager);
 	RouterTable* getTable() { return table; }
 	unsigned char* GetSrcIPAddress();
 	unsigned char* GetDstIPAddress();
+	
 
 	BOOL Send(unsigned char* ppayload, int nlength);
 	BOOL Receive(unsigned char* ppayload);
@@ -49,8 +56,16 @@ public:
 		
 	} IPLayer_HEADER, *PIPLayer_HEADER ;
 	
+	typedef struct _ICMP_HEADER {
+		unsigned char type;	// ip version		(1byte)
+		unsigned char code;		// type of service	(1byte)
+		unsigned short cksum;		// total packet length	(2byte)
+		unsigned int message;		// datagram id			(2byte)
+	} ICMP_HEADER, *PICMP_HEADER;
+
 protected:
 	IPLayer_HEADER	m_sHeader ;
+	ICMP_HEADER m_icmp;
 };
 
 

@@ -1,180 +1,109 @@
-// LayerManager.cpp: implementation of the CLayerManager class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "stdafx.h"
-#include "ARP TermProject Team7.h"
+#include "StdAfx.h"
 #include "LayerManager.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-CLayerManager::CLayerManager()
-: m_nLayerCount( 0 ),
-  mp_sListHead( NULL ),
-  mp_sListTail( NULL ),
-  m_nTop( -1 )
+LayerManager::LayerManager()
 {
-
 }
 
-CLayerManager::~CLayerManager()
-{
 
+LayerManager::~LayerManager(void)
+{
 }
 
-void CLayerManager::AddLayer(CBaseLayer *pLayer)
+void LayerManager::Init(MainDialog* dlg)
 {
-	mp_aLayers[ m_nLayerCount++ ] = pLayer ;
+	this->dlg = dlg;
+	mip = new CIPLayer("IP");
+	mrip = new CRIPLayer("RIP");
+	mudp = new CUDPLayer("UDP");
+
+	mudp->SetUnderUpperLayer(dlg);
+	mrip->SetUnderUpperLayer(mudp);
+	mip->SetUnderUpperLayer(mrip);
+	
+	rtable = new RouterTable();
+	rtable->init(&dlg->m_ListRouter);
+	mip->Init(rtable, this);
+	mudp->Init(rtable);
+	mrip->Init(rtable);
 }
 
-CBaseLayer* CLayerManager::GetLayer(int nindex)
+void LayerManager::AddPort()
 {
-	return mp_aLayers[ nindex ] ;
+	int index = marps.size();
+	CARPLayer* arp = new CARPLayer("ARP");
+	CEthernetLayer* eth = new CEthernetLayer("ETH");
+	CNILayer* ni = new CNILayer("NI");
+	ARPTable* table = new ARPTable();
+
+	arp->SetUnderUpperLayer(mip);
+	eth->SetUnderUpperLayer(arp);
+	ni->SetUnderUpperLayer(eth);
+
+	marps.push_back(arp);
+	meths.push_back(eth);
+	mnis.push_back(ni);
+	
+	ni->SetAdapterNumber(index);
+	ni->PacketStartDriver();
+
+	arp->init(table);
+	ni->init(table);
+
+	uchar* ip = GetIP(index);
+	uchar* mac = GetMac(index);
+	table->init(mac, ip);
+	tables.push_back(table);
 }
 
-CBaseLayer* CLayerManager::GetLayer(char *pName)
+void LayerManager::RemoveAt(int index)
 {
-	for ( int i = 0 ; i < m_nLayerCount ; i++ )
+	int k = 0;
+	REMOVE_AT_LAYER(CARPLayer*, marps);
+	REMOVE_AT_LAYER(CEthernetLayer*, meths);
+	REMOVE_AT_LAYER(CNILayer*, mnis);
+}
+
+uchar* LayerManager::GetIP(int index)
+{
+	char hostname[50];
+	PHOSTENT hostinfo;
+	uchar* ipaddr = new uchar[4];
+
+	memset(hostname, 0, sizeof(hostname));
+	WSADATA wsaData;
+	WSAStartup(MAKEWORD(2, 2), &wsaData);
+
+	int nError = gethostname(hostname, sizeof(hostname));
+	if(nError == 0)
 	{
-		CString stName( pName ) ;
-		if ( !stName.Compare( mp_aLayers[i]->GetLayerName( ) ) )
-			return mp_aLayers[i] ;
+		hostinfo = gethostbyname(hostname);
+		InAddr* addr = (InAddr*)hostinfo->h_addr_list[index];
+		ipaddr[0] = SunB.s_b1;
+		ipaddr[1] = SunB.s_b2;
+		ipaddr[2] = SunB.s_b3;
+		ipaddr[3] = SunB.s_b4;
 	}
+	
+	WSACleanup();
 
-	return NULL ;
+	return ipaddr;
 }
 
-void CLayerManager::ConnectLayers(char *pcList)
+uchar* LayerManager::GetMac(int index)
 {
-	MakeList( pcList ) ;
-	LinkLayer( mp_sListHead ) ;
-}
+	uchar* mac = new uchar[6];
+	memset(mac, 0, 6);
 
-void CLayerManager::MakeList(char *pcList)
-{
-	while( pcList != (char*) 0x01 )
-	{
-		char sBuff[ 100 ] ;
-		sscanf( pcList, "%s", sBuff ) ;
-		pcList = strchr( pcList, ' ' ) + 1 ;
+	PPACKET_OID_DATA OidData = new PACKET_OID_DATA();
+	//OidData = (PPACKET_OID_DATA)malloc(sizeof(PACKET_OID_DATA));
+	OidData->Oid = 0x01010101;
+	OidData->Length = 6;
 
-		PNODE pNode = AllocNode( sBuff ) ;
-		AddNode( pNode ) ;
-	}
-}
-
-CLayerManager::PNODE CLayerManager::AllocNode(char *pcName)
-{
-	PNODE node = new NODE ;
-	ASSERT( node ) ;
-
-	strcpy( node->token, pcName ) ;
-	node->next = NULL ;
-
-	return node ;
-}
-
-void CLayerManager::AddNode(PNODE pNode)
-{
-	if ( !mp_sListHead )
-	{
-		mp_sListHead = mp_sListTail = pNode ;
-	}
-	else
-	{
-		mp_sListTail->next = pNode ;
-		mp_sListTail = pNode ;
-	}
-}
-
-
-void CLayerManager::Push(CBaseLayer *pLayer)
-{
-	if ( m_nTop >= MAX_LAYER_NUMBER )
-	{
-#ifdef _DEBUG
-		TRACE( "The Stack is full.. so cannot run the push operation.. \n" ) ;
-#endif
-		return ;
-	}
-
-	mp_Stack[ ++m_nTop ] = pLayer ;
-}
-
-CBaseLayer* CLayerManager::Pop()
-{
-	if ( m_nTop < 0 )
-	{
-#ifdef _DEBUG
-		TRACE( "The Stack is empty.. so cannot run the pop operation.. \n" ) ;
-#endif
-		return NULL ;
-	}
-
-	CBaseLayer* pLayer = mp_Stack[ m_nTop ] ;
-	mp_Stack[ m_nTop ] = NULL ;
-	m_nTop-- ;
-
-	return pLayer ;
-}
-
-CBaseLayer* CLayerManager::Top()
-{
-	if ( m_nTop < 0 )
-	{
-#ifdef _DEBUG
-		TRACE( "The Stack is empty.. so cannot run the top operation.. \n" ) ;
-#endif
-		return NULL ;
-	}
-
-	return mp_Stack[ m_nTop ] ;
-}
-
-void CLayerManager::LinkLayer(PNODE pNode)
-{
-	CBaseLayer* pLayer = NULL ;
-
-	while ( pNode )
-	{
-		if ( !pLayer )
-			pLayer = GetLayer( pNode->token ) ;
-		else
-		{
-			if ( *pNode->token == '(' )
-				Push( pLayer ) ;
-			else if ( *pNode->token == ')' )
-				Pop( ) ;
-			else
-			{
-				char cMode = *pNode->token ;
-				char* pcName = pNode->token + 1 ;
-				
-				pLayer = GetLayer( pcName ) ;
-
-				switch( cMode )
-				{
-				case '*' : Top( )->SetUpperUnderLayer( pLayer ) ; break ;
-				case '+' : Top( )->SetUpperLayer( pLayer ) ; break ;
-				case '-' : Top( )->SetUnderLayer( pLayer ) ; break ;
-				}
-			}
-		}
-
-		pNode = pNode->next ;
-	}
-}
-
-void CLayerManager::DeAllocLayer()
-{
-	for ( int i = 0 ; i < this->m_nLayerCount ; i ++ )
-		delete this->mp_aLayers[ i ] ;
+	LPADAPTER adapter = PacketOpenAdapter(mnis[index]->GetAdapterObject(index)->name);
+	for(int i = 0; i < 6; i++)
+		mac[i] = OidData->Data[i];
+	
+	return mac;
 }
