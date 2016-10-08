@@ -81,11 +81,13 @@
 
 #define NI_COUNT_NIC	10
 
+#include <vector>
 typedef unsigned char uchar;//1byte
 typedef unsigned short ushort; //2byte
+typedef unsigned int uint; //2byte
 
-
-
+#define SVector std::vector
+#define Iterator(x) std::vector<x>::iterator
 
 
 #ifdef _UNICODE
